@@ -3,6 +3,7 @@
 const { expect } = require("chai")
 const { ethers } = require("hardhat")
 
+// 1 ether = 10^18 Wei = 10^9 GWei
 const tokens = (n) => {
   return ethers.utils.parseUnits(n.toString(), 'ether')
 }
@@ -24,6 +25,10 @@ describe("ETHDaddy", () => {
     // getting javascript version of our contract using ethers.js library
     const ETHDaddy = await ethers.getContractFactory('ETHDaddy')
     ethDaddy = await ETHDaddy.deploy('ETH Daddy', 'ETHD')
+
+    // List a Domain
+    const transaction = await ethDaddy.connect(deployer).list("jack.eth", tokens(10))
+    await transaction.wait()
   })
 
   describe('Deployment', () => {
@@ -40,6 +45,20 @@ describe("ETHDaddy", () => {
     it('Sets the owner', async() => {
       const result = await ethDaddy.owner()
       expect(result).to.equal(deployer.address)
+    })
+
+    it('Returns the max supply', async() => {
+      const result = await ethDaddy.maxSupply()
+      expect(result).to.equal(1)
+    })
+  })
+
+  describe("Domain", () => {
+    it("Returns domain attributes", async() => {
+      let domain = await ethDaddy.domains(1)
+      expect(domain.name).to.be.equal("jack.eth")
+      expect(domain.cost).to.be.equal(tokens(10))
+      expect(domain.isOwned).to.be.equal(false)
     })
   })
 })  
