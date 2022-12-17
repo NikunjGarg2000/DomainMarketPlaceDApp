@@ -6,7 +6,10 @@ import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract ETHDaddy is ERC721{
 
+    // theoritical no that can be minted
     uint256 public maxSupply;
+    // actual no that has been minted
+    uint256 public totalSupply;
 
     // developer of NFT
     address public owner;
@@ -17,7 +20,7 @@ contract ETHDaddy is ERC721{
         bool isOwned;
     }
 
-    mapping(uint256 => Domain) public domains;
+    mapping(uint256 => Domain) domains;
 
     modifier onlyOwner() {
         require(msg.sender == owner, "must be owner!");
@@ -36,4 +39,33 @@ contract ETHDaddy is ERC721{
         maxSupply++;
         domains[maxSupply] = Domain(_name, _cost, false);
     }
+
+    // using payable we can send some ether in while calling this function
+    function mint(uint256 _id) public payable {
+        require(_id != 0);
+        require(_id <= maxSupply);
+        require(domains[_id].isOwned == false);
+        require(msg.value >= domains[_id].cost);
+
+        domains[_id].isOwned = true;
+        totalSupply++;
+        // create nft from scratch coming from ERC721
+        _safeMint(msg.sender, _id);
+    }
+
+    function getDomain(uint256 _id) public view returns (Domain memory) {
+        return domains[_id];
+    }
+
+    // address(this) gives the address inside which smart contract resides
+    function getBalance() public view returns(uint256) {
+        return address(this).balance;
+    }
+
+    function withdraw() public onlyOwner {
+        // several ways to transfer ether in solidity
+        (bool success, ) = owner.call{value: address(this).balance}("");
+        require(success);
+    }
+
 }
