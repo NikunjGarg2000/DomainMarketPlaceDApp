@@ -122,6 +122,6 @@ describe("ETHDaddy", () => {
     it('Updates the contract balance', async () => {
       const result = await ethDaddy.getBalance()
       expect(result).to.equal(0)
-    })
+    }) 
 }) 
 }) 
