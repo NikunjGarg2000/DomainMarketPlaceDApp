@@ -14,7 +14,7 @@ const Search = () => {
           className='header__button'
         >
           Buy It
-        </button>
+         </button>
       </div>
     </header>
   );

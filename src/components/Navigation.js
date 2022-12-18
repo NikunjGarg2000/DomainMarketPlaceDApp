@@ -3,6 +3,7 @@ import logo from '../assets/logo.svg';
 
 const Navigation = ({ account, setAccount }) => {
   const connectHandler = async() => {
+    // window.ethereum is an object provided by metamask to our browser
     const accounts = await window.ethereum.request({method: 'eth_requestAccounts'});
     const account = ethers.utils.getAddress(accounts[0])
     setAccount(account)
